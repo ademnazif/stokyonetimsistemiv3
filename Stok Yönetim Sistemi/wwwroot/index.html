@@ -1,0 +1,1095 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Stok Yönetim Sistemi V3</title>
+    <style>
+        :root {
+            /* Mat Amber & Koyu Titanyum Tema */
+            --bg-color: #0b0706;
+            --panel-bg: #140d0a;
+            --panel-border: rgba(249, 115, 22, 0.25);
+            --card-bg: #1a110d;
+            --card-hover: #241611;
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-sub: #d4d4d8;
+            --text-muted: #a1a1aa;
+            --btn-orange-gradient: linear-gradient(180deg, #fb923c 0%, #ea580c 100%);
+            --btn-orange-hover: linear-gradient(180deg, #fdba74 0%, #f97316 100%);
+            --btn-border: #f97316;
+            --blue-soft: #38bdf8;
+            --green: #34d399;
+            --orange: #fbbf24;
+            --red: #f87171;
+            --cyan: #67e8f9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at 50% 15%, rgba(249, 115, 22, 0.28) 0%, transparent 60%), linear-gradient(180deg, #160c08 0%, #0b0706 60%, #050302 100%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 24px 16px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .layout-container {
+            width: 100%;
+            max-width: 1420px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .solid-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            padding: 20px 24px;
+            position: relative;
+        }
+
+        .banner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 26px;
+            border-radius: 999px;
+            gap: 12px;
+        }
+
+        .banner-title {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .orange-btn {
+            background: var(--btn-orange-gradient);
+            border: 1px solid var(--btn-border);
+            color: #ffffff;
+            padding: 8px 18px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);
+            transition: transform 0.15s ease, filter 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+            .orange-btn:hover:not(:disabled) {
+                background: var(--btn-orange-hover);
+                transform: translateY(-1.5px);
+                box-shadow: 0 6px 18px rgba(249, 115, 22, 0.5);
+            }
+
+            .orange-btn:active:not(:disabled) {
+                transform: translateY(0);
+            }
+
+            .orange-btn:disabled {
+                background: rgba(248, 113, 113, 0.15) !important;
+                border-color: rgba(248, 113, 113, 0.35) !important;
+                color: rgba(255, 255, 255, 0.45) !important;
+                cursor: not-allowed;
+                transform: none !important;
+                box-shadow: none !important;
+            }
+
+        .orange-btn-circle {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            border-radius: 50%;
+            font-size: 16px;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .metric-card {
+            padding: 18px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .metric-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .metric-value {
+            font-size: 25px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 2fr 1.3fr 1fr 1fr 1fr auto;
+            gap: 12px;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .solid-input, .solid-select {
+            background: #1c130f;
+            border: 1px solid var(--panel-border);
+            border-radius: 999px;
+            padding: 10px 16px;
+            color: var(--text-main);
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.15s ease;
+            width: 100%;
+        }
+
+            .solid-input::placeholder {
+                color: var(--text-muted);
+            }
+
+            .solid-input:focus, .solid-select:focus {
+                border-color: #fb923c;
+                box-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
+            }
+
+            .solid-select option {
+                background: #1c130f;
+                color: #ffffff;
+            }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2.15fr 1fr;
+            gap: 20px;
+        }
+
+        .catalog-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .catalog-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 680px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+            .catalog-grid::-webkit-scrollbar {
+                width: 5px;
+            }
+
+            .catalog-grid::-webkit-scrollbar-thumb {
+                background: rgba(249, 115, 22, 0.35);
+                border-radius: 6px;
+            }
+
+        .catalog-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 14px 18px;
+            display: grid;
+            grid-template-columns: 44px 2fr 1.2fr 1.1fr 0.9fr 0.9fr 140px;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.15s ease, border-color 0.15s ease;
+        }
+
+            .catalog-card:hover {
+                background: var(--card-hover);
+                border-color: rgba(249, 115, 22, 0.4);
+            }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            width: fit-content;
+        }
+
+        .badge-normal {
+            background: rgba(52, 211, 153, 0.18);
+            color: #6ee7b7;
+            border: 1px solid rgba(52, 211, 153, 0.4);
+        }
+
+        .badge-critical {
+            background: rgba(251, 191, 36, 0.18);
+            color: #fde047;
+            border: 1px solid rgba(251, 191, 36, 0.45);
+        }
+
+        .badge-locked {
+            background: rgba(248, 113, 113, 0.18);
+            color: #fca5a5;
+            border: 1px solid rgba(248, 113, 113, 0.45);
+        }
+
+        .sidebar-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .cart-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 250px;
+            overflow-y: auto;
+            margin-top: 12px;
+            padding-right: 4px;
+        }
+
+        .cart-item {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 12px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12.5px;
+        }
+
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .qty-badge {
+            font-weight: 700;
+            min-width: 18px;
+            text-align: center;
+            color: var(--text-main);
+        }
+
+        .terminal-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow-y: auto;
+            max-height: 240px;
+            padding-right: 4px;
+            margin-top: 12px;
+        }
+
+            .terminal-feed::-webkit-scrollbar, .cart-list::-webkit-scrollbar {
+                width: 4px;
+            }
+
+            .terminal-feed::-webkit-scrollbar-thumb, .cart-list::-webkit-scrollbar-thumb {
+                background: rgba(249, 115, 22, 0.35);
+                border-radius: 4px;
+            }
+
+        .log-entry {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 10px 12px;
+            font-size: 11.5px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .log-tag {
+            font-size: 9.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .toast-viewport {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .solid-toast {
+            pointer-events: auto;
+            min-width: 300px;
+            max-width: 380px;
+            background: #1c110d;
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            padding: 14px 18px;
+            box-shadow: 0 16px 35px rgba(0, 0, 0, 0.8);
+            animation: toastSlide 0.25s ease-out forwards;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        @keyframes toastSlide {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .form-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+                .form-row button {
+                    grid-column: span 2;
+                }
+
+            .catalog-card {
+                grid-template-columns: 40px 1.8fr 1fr 1fr 1fr auto;
+            }
+
+                .catalog-card > div:nth-child(3) {
+                    display: none;
+                }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 14px 10px;
+            }
+
+            .layout-container {
+                gap: 14px;
+            }
+
+            .solid-panel {
+                padding: 16px;
+                border-radius: 18px;
+            }
+
+            .banner {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+                border-radius: 18px;
+                padding: 14px 16px;
+            }
+
+            .banner-title {
+                font-size: 18px;
+            }
+
+            .banner > div {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .metric-card {
+                padding: 14px 16px;
+            }
+
+            .metric-value {
+                font-size: 22px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+                .form-row button {
+                    grid-column: span 1;
+                    width: 100%;
+                    padding: 12px;
+                }
+
+            .catalog-card {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                padding: 14px;
+            }
+
+            .catalog-card-top {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+            }
+
+            .catalog-card-mid {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-top: 1px solid rgba(255, 255, 255, 0.08);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                padding: 8px 0;
+            }
+
+            .catalog-card-actions {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .toast-viewport {
+                top: 12px;
+                right: 12px;
+                left: 12px;
+            }
+
+            .solid-toast {
+                min-width: unset;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="toast-viewport" id="toastBox" aria-live="polite"></aside>
+
+    <div class="layout-container">
+
+        <!-- Üst Başlık -->
+        <header class="solid-panel banner">
+            <h1 class="banner-title">Stok Yönetim Sistemi</h1>
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <div class="orange-btn" style="cursor: default;">
+                    Stok Yönetim Sistemi
+                </div>
+                <div class="orange-btn" style="cursor: default; background: #22140e; border-color: var(--panel-border);">
+                    🛒 Sepet: <span id="cartCountTop" style="color:var(--cyan); margin-left:4px;">0</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Finansal Metrikler -->
+        <section class="metrics-grid" aria-label="Finansal Özet Göstergeleri">
+            <div class="solid-panel metric-card">
+                <span class="metric-label">Tanımlı Ürün Skalası</span>
+                <span class="metric-value" id="valCesit">10 / 20</span>
+            </div>
+            <div class="solid-panel metric-card">
+                <span class="metric-label">Toplam Depo Stoğu</span>
+                <span class="metric-value" id="valStok">60 Adet</span>
+            </div>
+            <div class="solid-panel metric-card">
+                <span class="metric-label">Gerçekleşen Sepet Satışı</span>
+                <span class="metric-value" style="color:var(--blue-soft);" id="valCiro">₺0</span>
+            </div>
+            <div class="solid-panel metric-card">
+                <span class="metric-label">Kazanılan Net Kâr</span>
+                <span class="metric-value" style="color:var(--green);" id="valKar">₺0</span>
+            </div>
+        </section>
+
+        <!-- Yeni Ürün Tanımlama Paneli -->
+        <section class="solid-panel" style="padding: 18px 22px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+                <h3 style="font-size: 14px; font-weight: 700;">➕ Yeni Donanım Bileşeni Ekle</h3>
+                <span style="font-size: 11px; color: var(--text-muted);">Sadece geçerli PC / Teknoloji donanımları kabul edilir</span>
+            </div>
+            <form id="formYeniUrun" class="form-row">
+                <input type="text" id="inpAd" class="solid-input" placeholder="Bileşen Adı (Örn: RTX 4070 Ti, DDR5 RAM)" required autocomplete="off">
+                <select id="inpKategori" class="solid-select">
+                    <option value="Temel Donanım">Temel Donanım</option>
+                    <option value="Bellek & Depolama">Bellek & Depolama</option>
+                    <option value="Kasa & Güç">Kasa & Güç</option>
+                    <option value="Soğutma">Soğutma</option>
+                    <option value="Çevre Birimleri">Çevre Birimleri</option>
+                </select>
+                <input type="number" id="inpAlis" class="solid-input" placeholder="Alış Fiyatı (₺)" min="1" required>
+                <input type="number" id="inpSatis" class="solid-input" placeholder="Satış Fiyatı (₺)" min="1" required>
+                <input type="number" id="inpStok" class="solid-input" placeholder="Stok (Max 15)" min="1" max="15" required>
+                <button type="submit" class="orange-btn">
+                    ＋ Kataloğa Ekle
+                </button>
+            </form>
+        </section>
+
+        <!-- Çalışma Alanı -->
+        <div class="content-grid">
+
+            <main class="solid-panel">
+                <div class="catalog-header">
+                    <div>
+                        <h3 style="font-size:15px; font-weight:700;">PC Donanım Kataloğu</h3>
+                        <p style="font-size:12px; color:var(--text-sub); margin-top:2px;">Bağımsız donanım bileşen kartları</p>
+                    </div>
+                    <span style="font-size:11.5px; color:var(--text-muted); font-weight:600;">Stok Sınırı: 15/Ürün</span>
+                </div>
+
+                <div class="catalog-grid" id="inventoryContainer"></div>
+            </main>
+
+            <aside class="sidebar-wrap">
+
+                <div class="solid-panel">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 style="font-size:14px; font-weight:600;">Mini Sepet</h3>
+                        <span id="cartTotalSummary" style="font-size:13px; font-weight:700; color:var(--cyan);">₺0</span>
+                    </div>
+                    <div class="cart-list" id="cartList">
+                        <div style="color:var(--text-muted); font-size:12px; text-align:center; padding:18px 0;">Sepetiniz henüz boş</div>
+                    </div>
+                </div>
+
+                <div class="solid-panel">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 style="font-size:13px; font-weight:600; color:var(--text-sub);">İşlem Kayıtları</h3>
+                        <button type="button" class="orange-btn" style="padding:4px 10px; font-size:11px;" id="btnLogTemizle">Temizle</button>
+                    </div>
+                    <div class="terminal-feed" id="terminalFeed"></div>
+                </div>
+
+            </aside>
+
+        </div>
+    </div>
+
+    <script>
+                // @ts-nocheck
+                (function () {
+                    "use strict";
+
+                    var urunler = [
+                        { id: 1, ad: "8GB GDDR6 256-Bit Ekran Kartı", kategori: "Temel Donanım", alis: 9500, satis: 12500, stok: 4, kilitli: false },
+                        { id: 2, ad: "8 Çekirdek 4.5GHz İşlemci", kategori: "Temel Donanım", alis: 5200, satis: 7100, stok: 8, kilitli: false },
+                        { id: 3, ad: "ATX DDR5 Soket Anakart", kategori: "Temel Donanım", alis: 3800, satis: 5200, stok: 6, kilitli: false },
+                        { id: 4, ad: "16GB DDR5 6000MHz RAM", kategori: "Bellek & Depolama", alis: 1600, satis: 2350, stok: 15, kilitli: false },
+                        { id: 5, ad: "1TB NVMe M.2 PCIe 4.0 SSD", kategori: "Bellek & Depolama", alis: 1900, satis: 2800, stok: 10, kilitli: false },
+                        { id: 6, ad: "750W 80+ Bronz Güç Kaynağı", kategori: "Kasa & Güç", alis: 1800, satis: 2600, stok: 5, kilitli: false },
+                        { id: 7, ad: "Temperli Cam ATX Bilgisayar Kasası", kategori: "Kasa & Güç", alis: 1500, satis: 2250, stok: 7, kilitli: false },
+                        { id: 8, ad: "240mm Sıvı İşlemci Soğutucu", kategori: "Soğutma", alis: 2100, satis: 3100, stok: 2, kilitli: false },
+                        { id: 9, ad: "Kablosuz Optik Oyuncu Mouse", kategori: "Çevre Birimleri", alis: 600, satis: 950, stok: 12, kilitli: false },
+                        { id: 10, ad: "Mekanik RGB Türkçe Klavye", kategori: "Çevre Birimleri", alis: 900, satis: 1450, stok: 1, kilitli: false }
+                    ];
+
+                    var sepet = [];
+                    var formatTL = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 });
+
+                    var GECERLI_TEKNOLOJI_TERIMLERI = [
+                        "ekran kartı", "gpu", "rtx", "gtx", "rx", "radeon", "geforce",
+                        "işlemci", "cpu", "intel", "amd", "ryzen", "core", "i3", "i5", "i7", "i9",
+                        "anakart", "motherboard", "atx", "b650", "b550", "z790", "soket",
+                        "ram", "bellek", "ddr4", "ddr5", "mhz", "sodimm",
+                        "ssd", "nvme", "m.2", "harddisk", "hdd", "depolama", "disk",
+                        "güç kaynağı", "psu", "power", "watt", "80+",
+                        "kasa", "kasa fanı", "tower", "chassis",
+                        "soğutucu", "cooler", "sıvı soğutma", "fan", "heatsink",
+                        "mouse", "fare", "klavye", "keyboard", "kulaklık", "headset",
+                        "monitör", "ekran", "display", "hoparlör", "webcam", "kamera", "mikrofon"
+                    ];
+
+                    var GECERSIZ_KELIMELER = [
+                        "elma", "armut", "domates", "ekmek", "su", "kola", "tişört", "gömlek",
+                        "pantolon", "ceket", "ayakkabı", "çorap", "masa", "sandalye", "koltuk", "dolap", "halı"
+                    ];
+
+                    function gosterToast(mesaj, tip) {
+                        var viewport = document.getElementById('toastBox');
+                        if (!viewport) return;
+
+                        var toast = document.createElement('div');
+                        toast.className = 'solid-toast';
+
+                        var renk = (tip === 'error') ? 'var(--red)' : ((tip === 'warn') ? 'var(--orange)' : 'var(--green)');
+                        var baslik = (tip === 'error') ? 'HATA OLUŞTU' : ((tip === 'warn') ? 'DİKKAT / UYARI' : 'İŞLEM BAŞARILI');
+
+                        toast.style.borderLeft = '4px solid ' + renk;
+                        toast.innerHTML =
+                            '<div style="font-size:11px; font-weight:700; color:' + renk + '; letter-spacing:0.04em;">' + baslik + '</div>' +
+                            '<div style="font-size:13px; font-weight:600; color:var(--text-main);">' + mesaj + '</div>';
+
+                        viewport.appendChild(toast);
+                        setTimeout(function () {
+                            toast.style.opacity = '0';
+                            toast.style.transform = 'translateY(-10px)';
+                            toast.style.transition = 'all 0.25s ease';
+                            setTimeout(function () {
+                                if (toast.parentNode) toast.parentNode.removeChild(toast);
+                            }, 250);
+                        }, 2500);
+                    }
+
+                    function ekleLog(metin, tag, renk) {
+                        var feed = document.getElementById('terminalFeed');
+                        if (!feed) return;
+
+                        var entry = document.createElement('div');
+                        entry.className = 'log-entry';
+                        entry.innerHTML =
+                            '<span class="log-tag" style="color:' + renk + ';">' + tag + '</span>' +
+                            '<span style="color:var(--text-main);">' + metin + '</span>' +
+                            '<span style="color:var(--text-muted); font-size:10px;">' + new Date().toLocaleTimeString() + '</span>';
+                        feed.prepend(entry);
+                        if (feed.children.length > 25) feed.lastElementChild.remove();
+                    }
+
+                    function metrikleriGuncelle() {
+                        var toplamStok = 0;
+                        for (var i = 0; i < urunler.length; i++) {
+                            toplamStok += urunler[i].stok;
+                        }
+
+                        var toplamSepetAdet = 0;
+                        var gerceklesenSatis = 0;
+                        var kazanilanNetKar = 0;
+
+                        for (var j = 0; j < sepet.length; j++) {
+                            var s = sepet[j];
+                            toplamSepetAdet += s.adet;
+                            gerceklesenSatis += (s.fiyat * s.adet);
+                            kazanilanNetKar += ((s.fiyat - s.alis) * s.adet);
+                        }
+
+                        var elCesit = document.getElementById('valCesit');
+                        var elStok = document.getElementById('valStok');
+                        var elCiro = document.getElementById('valCiro');
+                        var elKar = document.getElementById('valKar');
+                        var elCartCount = document.getElementById('cartCountTop');
+
+                        if (elCesit) elCesit.textContent = urunler.length + " / 20";
+                        if (elStok) elStok.textContent = toplamStok + " Adet";
+                        if (elCiro) elCiro.textContent = formatTL.format(gerceklesenSatis);
+                        if (elKar) elKar.textContent = formatTL.format(kazanilanNetKar);
+                        if (elCartCount) elCartCount.textContent = toplamSepetAdet;
+                    }
+
+                    function sepetArayuzunuGuncelle() {
+                        var cartList = document.getElementById('cartList');
+                        var cartTotalSummary = document.getElementById('cartTotalSummary');
+                        if (!cartList || !cartTotalSummary) return;
+
+                        if (!sepet.length) {
+                            cartList.innerHTML = '<div style="color:var(--text-muted); font-size:12px; text-align:center; padding:18px 0;">Sepetiniz henüz boş</div>';
+                            cartTotalSummary.textContent = formatTL.format(0);
+                            return;
+                        }
+
+                        var html = '';
+                        var toplamTutar = 0;
+
+                        for (var i = 0; i < sepet.length; i++) {
+                            var item = sepet[i];
+                            var satirTutari = item.fiyat * item.adet;
+                            toplamTutar += satirTutari;
+                            html +=
+                                '<div class="cart-item">' +
+                                    '<div>' +
+                                        '<div style="font-weight:600; color:var(--text-main); font-size:12px;">' + item.ad + '</div>' +
+                                        '<div style="font-size:11px; color:var(--text-sub);">' + formatTL.format(item.fiyat) + ' × ' + item.adet + ' = <b>' + formatTL.format(satirTutari) + '</b></div>' +
+                                    '</div>' +
+                                    '<div class="qty-controls">' +
+                                        '<button type="button" class="orange-btn orange-btn-circle btn-sepet-eksilt" data-id="' + item.id + '">−</button>' +
+                                        '<span class="qty-badge">' + item.adet + '</span>' +
+                                        '<button type="button" class="orange-btn orange-btn-circle btn-sepet-arttir" data-id="' + item.id + '">+</button>' +
+                                    '</div>' +
+                                '</div>';
+                        }
+
+                        cartList.innerHTML = html;
+                        cartTotalSummary.textContent = formatTL.format(toplamTutar);
+                    }
+
+                    function tabloyuYenile() {
+                        var container = document.getElementById('inventoryContainer');
+                        if (!container) return;
+
+                        var isMobile = window.innerWidth <= 768;
+                        var html = '';
+
+                        for (var i = 0; i < urunler.length; i++) {
+                            var u = urunler[i];
+                            var badgeClass = (u.stok === 0 || u.kilitli) ? 'badge-locked' : (u.stok <= 3 ? 'badge-critical' : 'badge-normal');
+                            var durumMetni = (u.stok === 0 || u.kilitli) ? 'Kilitli' : (u.stok <= 3 ? 'Kritik (' + u.stok + ')' : 'Stokta Var');
+                            var isBtnDisabled = u.kilitli || u.stok === 0;
+
+                            if (isMobile) {
+                                html +=
+                                    '<div class="catalog-card">' +
+                                        '<div class="catalog-card-top">' +
+                                            '<div>' +
+                                                '<div style="font-size:11px; color:var(--text-muted); font-weight:700;">#' + u.id + ' • ' + u.kategori + '</div>' +
+                                                '<div style="font-weight:600; color:var(--text-main); font-size:14px; margin-top:2px;">' + u.ad + '</div>' +
+                                            '</div>' +
+                                            '<span class="badge ' + badgeClass + '">' + durumMetni + '</span>' +
+                                        '</div>' +
+                                        '<div class="catalog-card-mid">' +
+                                            '<div>' +
+                                                '<span style="font-size:11px; color:var(--text-muted);">Birim Satış:</span>' +
+                                                '<b style="font-size:14px; color:var(--text-main); margin-left:4px;">' + formatTL.format(u.satis) + '</b>' +
+                                            '</div>' +
+                                            '<div>' +
+                                                '<span style="font-size:11px; color:var(--text-muted);">Katalog Stoğu:</span>' +
+                                                '<b style="font-size:13px; margin-left:4px;">' + u.stok + ' / 15</b>' +
+                                            '</div>' +
+                                        '</div>' +
+                                        '<div class="catalog-card-actions">' +
+                                            '<div style="display:flex; align-items:center; gap:8px;">' +
+                                                '<button type="button" class="orange-btn orange-btn-circle btn-stok-degis" data-id="' + u.id + '" data-delta="-1">−</button>' +
+                                                '<span style="font-size:12px; color:var(--text-sub); font-weight:600;">Stok Ayarı</span>' +
+                                                '<button type="button" class="orange-btn orange-btn-circle btn-stok-degis" data-id="' + u.id + '" data-delta="1">+</button>' +
+                                            '</div>' +
+                                            '<button type="button" class="orange-btn btn-sepete-ekle" data-id="' + u.id + '" data-kaynak="Mobil" style="padding:6px 16px; font-size:12px;" ' + (isBtnDisabled ? 'disabled' : '') + '>' +
+                                                (isBtnDisabled ? '🔒 Kilitli' : '🛒 Sepete Ekle') +
+                                            '</button>' +
+                                        '</div>' +
+                                    '</div>';
+                            } else {
+                                html +=
+                                    '<div class="catalog-card">' +
+                                        '<div style="font-weight:700; color:var(--text-muted); font-size:12px;">#' + u.id + '</div>' +
+                                        '<div>' +
+                                            '<div style="font-weight:600; color:var(--text-main); font-size:13.5px; line-height:1.2;">' + u.ad + '</div>' +
+                                            '<div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Bileşen ID: ' + u.id + '00</div>' +
+                                        '</div>' +
+                                        '<div style="font-size:12px; color:var(--text-sub);">' + u.kategori + '</div>' +
+                                        '<div style="font-weight:700; font-size:13.5px; color:var(--text-main);">' + formatTL.format(u.satis) + '</div>' +
+                                        '<div>' +
+                                            '<span style="font-weight:700; font-size:13px;">' + u.stok + '</span>' +
+                                            '<span style="font-size:11px; color:var(--text-muted);">/ 15</span>' +
+                                        '</div>' +
+                                        '<div>' +
+                                            '<span class="badge ' + badgeClass + '">' + durumMetni + '</span>' +
+                                        '</div>' +
+                                        '<div style="display:flex; justify-content:flex-end; align-items:center; gap:6px;">' +
+                                            '<button type="button" class="orange-btn orange-btn-circle btn-stok-degis" data-id="' + u.id + '" data-delta="-1" title="Katalog Stoğu Azalt">−</button>' +
+                                            '<button type="button" class="orange-btn orange-btn-circle btn-stok-degis" data-id="' + u.id + '" data-delta="1" title="Katalog Stoğu Arttır">+</button>' +
+                                            '<button type="button" class="orange-btn btn-sepete-ekle" data-id="' + u.id + '" data-kaynak="Kullanıcı" style="margin-left:4px; padding:6px 14px; font-size:12px;" ' + (isBtnDisabled ? 'disabled' : '') + '>' +
+                                                (isBtnDisabled ? '🔒' : '🛒') +
+                                            '</button>' +
+                                        '</div>' +
+                                    '</div>';
+                            }
+                        }
+
+                        container.innerHTML = html;
+                        metrikleriGuncelle();
+                        sepetArayuzunuGuncelle();
+                    }
+
+                    function urunEkleCore(ad, kategori, alis, satis, stok) {
+                        if (urunler.length >= 20) {
+                            throw new Error("Katalog limiti (20 ürün) doldu! Daha fazla ürün eklenemez.");
+                        }
+
+                        if (!ad || ad.trim().length < 3) {
+                            throw new Error("Ürün adı en az 3 karakter olmalıdır!");
+                        }
+
+                        var temizAd = ad.toLowerCase().trim();
+
+                        var yasakliVar = false;
+                        for (var i = 0; i < GECERSIZ_KELIMELER.length; i++) {
+                            if (temizAd.indexOf(GECERSIZ_KELIMELER[i]) !== -1) {
+                                yasakliVar = true;
+                                break;
+                            }
+                        }
+                        if (yasakliVar) {
+                            throw new Error("'" + ad + "' teknolojik bir donanım bileşeni değildir!");
+                        }
+
+                        var gecerliMi = false;
+                        for (var j = 0; j < GECERLI_TEKNOLOJI_TERIMLERI.length; j++) {
+                            if (temizAd.indexOf(GECERLI_TEKNOLOJI_TERIMLERI[j]) !== -1) {
+                                gecerliMi = true;
+                                break;
+                            }
+                        }
+                        if (!gecerliMi) {
+                            throw new Error("Tanımlanamayan donanım türü! Lütfen geçerli bir PC bileşeni girin.");
+                        }
+
+                        for (var k = 0; k < urunler.length; k++) {
+                            if (urunler[k].ad.toLowerCase() === temizAd) {
+                                throw new Error("'" + ad + "' zaten katalogda mevcut!");
+                            }
+                        }
+
+                        if (isNaN(alis) || alis <= 0) {
+                            throw new Error("Geçerli bir alış fiyatı giriniz!");
+                        }
+
+                        if (isNaN(satis) || satis <= 0) {
+                            throw new Error("Geçerli bir satış fiyatı giriniz!");
+                        }
+
+                        if (satis < alis) {
+                            throw new Error("Satış fiyatı alış fiyatından düşük olamaz!");
+                        }
+
+                        if (isNaN(stok) || stok < 1 || stok > 15) {
+                            throw new Error("Stok miktarı 1 ile 15 adet arasında olmalıdır!");
+                        }
+
+                        var enYuksekId = 0;
+                        for (var m = 0; m < urunler.length; m++) {
+                            if (urunler[m].id > enYuksekId) enYuksekId = urunler[m].id;
+                        }
+                        var yeniId = enYuksekId + 1;
+
+                        var yeniUrun = {
+                            id: yeniId,
+                            ad: ad.trim(),
+                            kategori: kategori,
+                            alis: Number(alis),
+                            satis: Number(satis),
+                            stok: Number(stok),
+                            kilitli: false
+                        };
+
+                        urunler.push(yeniUrun);
+                        return yeniUrun;
+                    }
+
+                    function sepeteEkleCore(urunId, kaynak) {
+                        var urun = null;
+                        for (var i = 0; i < urunler.length; i++) {
+                            if (urunler[i].id === urunId) {
+                                urun = urunler[i];
+                                break;
+                            }
+                        }
+
+                        if (!urun) {
+                            throw new Error("Ürün bulunamadı!");
+                        }
+
+                        if (urun.kilitli || urun.stok <= 0) {
+                            throw new Error("'" + urun.ad + "' stoğu tükenmiş veya buton kilitli!");
+                        }
+
+                        var toplamSepetAdet = 0;
+                        for (var j = 0; j < sepet.length; j++) {
+                            toplamSepetAdet += sepet[j].adet;
+                        }
+
+                        if (toplamSepetAdet >= 1) {
+                            throw new Error("Sepet limiti aşıldı! Sepete aynı anda en fazla 1 adet ürün eklenebilir.");
+                        }
+
+                        urun.stok--;
+                        urun.kilitli = (urun.stok === 0);
+
+                        sepet.push({ id: urun.id, ad: urun.ad, alis: urun.alis, fiyat: urun.satis, adet: 1 });
+                        return urun;
+                    }
+
+                    function sepeteEkleHandler(urunId, kaynak) {
+                        try {
+                            var urun = sepeteEkleCore(urunId, kaynak);
+                            gosterToast("'" + urun.ad + "' başarıyla sepete eklendi.", "success");
+                            ekleLog("Sepete Eklendi: '" + urun.ad + "' [Kaynak: " + kaynak + "]", "[İŞLEM]", "var(--green)");
+                        } catch (hata) {
+                            gosterToast(hata.message, "error");
+                            ekleLog("Sepet Hatası: " + hata.message, "[REJECTED]", "var(--red)");
+                        } finally {
+                            tabloyuYenile();
+                        }
+                    }
+
+                    function stokDegistirHandler(urunId, miktar) {
+                        var urun = null;
+                        for (var i = 0; i < urunler.length; i++) {
+                            if (urunler[i].id === urunId) {
+                                urun = urunler[i];
+                                break;
+                            }
+                        }
+                        if (!urun) return;
+
+                        var yeniStok = urun.stok + miktar;
+                        if (yeniStok < 0) yeniStok = 0;
+                        if (yeniStok > 15) yeniStok = 15;
+
+                        urun.stok = yeniStok;
+                        urun.kilitli = (urun.stok === 0);
+
+                        ekleLog("Katalog Stoğu: '" + urun.ad + "' -> " + urun.stok + " adet", miktar > 0 ? "[STOK +]" : "[STOK -]", miktar > 0 ? "var(--green)" : "var(--orange)");
+                        tabloyuYenile();
+                    }
+
+                    function sepettenEksiltHandler(urunId) {
+                        var index = -1;
+                        for (var i = 0; i < sepet.length; i++) {
+                            if (sepet[i].id === urunId) {
+                                index = i;
+                                break;
+                            }
+                        }
+                        if (index === -1) return;
+
+                        var item = sepet[index];
+                        item.adet--;
+                        if (item.adet <= 0) {
+                            sepet.splice(index, 1);
+                        }
+
+                        for (var j = 0; j < urunler.length; j++) {
+                            if (urunler[j].id === urunId) {
+                                if (urunler[j].stok < 15) {
+                                    urunler[j].stok++;
+                                    urunler[j].kilitli = false;
+                                }
+                                break;
+                            }
+                        }
+
+                        ekleLog("Sepetten Çıkarıldı: '" + item.ad + "'", "[SEPET -]", "var(--orange)");
+                        tabloyuYenile();
+                    }
+
+                    // Olay Dinleyicileri (Event Delegation ile HTML içindeki inline kodlar temizlendi)
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var form = document.getElementById('formYeniUrun');
+                        if (form) {
+                            form.addEventListener('submit', function (e) {
+                                if (e && e.preventDefault) e.preventDefault();
+
+                                var inpAd = document.getElementById('inpAd');
+                                var inpKategori = document.getElementById('inpKategori');
+                                var inpAlis = document.getElementById('inpAlis');
+                                var inpSatis = document.getElementById('inpSatis');
+                                var inpStok = document.getElementById('inpStok');
+
+                                if (!inpAd || !inpKategori || !inpAlis || !inpSatis || !inpStok) return;
+
+                                try {
+                                    var eklenen = urunEkleCore(
+                                        inpAd.value,
+                                        inpKategori.value,
+                                        parseFloat(inpAlis.value),
+                                        parseFloat(inpSatis.value),
+                                        parseInt(inpStok.value, 10)
+                                    );
+                                    gosterToast("'" + eklenen.ad + "' kataloğa başarıyla tanımlandı.", "success");
+                                    ekleLog("Yeni Donanım Eklendi: #" + eklenen.id + " '" + eklenen.ad + "' (Stok: " + eklenen.stok + ")", "[ÜRÜN TANIMLANDI]", "var(--green)");
+
+                                    inpAd.value = '';
+                                    inpAlis.value = '';
+                                    inpSatis.value = '';
+                                    inpStok.value = '';
+                                } catch (hata) {
+                                    gosterToast(hata.message, "error");
+                                    ekleLog("Donanım Ekleme Reddedildi: " + hata.message, "[REDDEDİLDİ]", "var(--red)");
+                                } finally {
+                                    tabloyuYenile();
+                                }
+                            });
+                        }
+
+                        var btnLog = document.getElementById('btnLogTemizle');
+                        if (btnLog) {
+                            btnLog.addEventListener('click', function () {
+                                var feed = document.getElementById('terminalFeed');
+                                if (feed) feed.innerHTML = '';
+                            });
+                        }
+
+                        // Dinamik Tıklamalar
+                        document.body.addEventListener('click', function (e) {
+                            var target = e.target;
+                            if (!target) return;
+
+                            // Sepete Ekle
+                            var btnSepet = target.closest('.btn-sepete-ekle');
+                            if (btnSepet && !btnSepet.disabled) {
+                                var id = parseInt(btnSepet.getAttribute('data-id'), 10);
+                                var kaynak = btnSepet.getAttribute('data-kaynak') || 'Kullanıcı';
+                                sepeteEkleHandler(id, kaynak);
+                                return;
+                            }
+
+                            // Stok Artır / Azalt
+                            var btnStok = target.closest('.btn-stok-degis');
+                            if (btnStok) {
+                                var idStok = parseInt(btnStok.getAttribute('data-id'), 10);
+                                var delta = parseInt(btnStok.getAttribute('data-delta'), 10);
+                                stokDegistirHandler(idStok, delta);
+                                return;
+                            }
+
+                            // Sepet İçi Azalt
+                            var btnSepetEksilt = target.closest('.btn-sepet-eksilt');
+                            if (btnSepetEksilt) {
+                                var idEksilt = parseInt(btnSepetEksilt.getAttribute('data-id'), 10);
+                                sepettenEksiltHandler(idEksilt);
+                                return;
+                            }
+
+                            // Sepet İçi Artır
+                            var btnSepetArttir = target.closest('.btn-sepet-arttir');
+                            if (btnSepetArttir) {
+                                var idArttir = parseInt(btnSepetArttir.getAttribute('data-id'), 10);
+                                sepeteEkleHandler(idArttir, 'Sepet İçi +');
+                                return;
+                            }
+                        });
+
+                        window.addEventListener('resize', tabloyuYenile);
+                        tabloyuYenile();
+                        ekleLog("Sistem Başlatıldı: Donanım kataloğu hazır.", "[BAŞLATILDI]", "var(--cyan)");
+                    });
+                })();
+    </script>
+</body>
+</html>

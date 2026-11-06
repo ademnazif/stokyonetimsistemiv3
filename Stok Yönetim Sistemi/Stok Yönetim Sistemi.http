@@ -1,0 +1,6 @@
+@Stok_Yönetim_Sistemi_HostAddress = http://localhost:5055
+
+GET {{Stok_Yönetim_Sistemi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
